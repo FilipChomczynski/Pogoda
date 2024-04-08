@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -18,8 +19,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var url = "https://api.openweathermap.org/data/2.5/weather?q=Bielsko-Biala&lang=pl&appid=29604613abf856e1b8f45210c7ae7562";
-        var data: JSONObject = JSONObject("{}");
+        val url = "https://api.openweathermap.org/data/2.5/weather?q=Bielsko-Biala&lang=pl&appid=29604613abf856e1b8f45210c7ae7562"
+        var data: JSONObject = JSONObject("{}")
 
         val request = Request.Builder()
             .url(url)
@@ -27,19 +28,22 @@ class MainActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
+            @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call, response: Response){
-                data = JSONObject(response.body()?.string());
-                var temp = data.getJSONObject("main").getString("temp");
-                var temp_label = findViewById<TextView>(R.id.textView);
-                runOnUiThread {
-                    temp_label.text = temp;
-                }
+                data = JSONObject(response.body()?.string())
 
+                runOnUiThread {
+                    findViewById<TextView>(R.id.temperatura).text = data.getJSONObject("main").getString("temp")
+                    findViewById<TextView>(R.id.stan).text = data.getString("name")
+
+
+                    findViewById<TextView>(R.id.temperatura).text = "temperatura: " + data.getJSONObject("main").getString("temp")
+                    findViewById<TextView>(R.id.wiatr).text = "wiatr: " + data.getJSONObject("wind").getString("speed")
+                    findViewById<TextView>(R.id.cisnienie).text = "cisnienie: " + data.getJSONObject("wind").getString("speed")
+                    findViewById<TextView>(R.id.wilgotnosc).text = "wilgotnosc: " + data.getJSONObject("main").getString("humidity")
+                    findViewById<TextView>(R.id.widocznosc).text = "widocznosc: " + data.getString("visibility")
+                }
             }
         })
-
-
-
-
     }
 }
